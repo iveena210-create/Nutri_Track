@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>NutriTrack — Achievements</title>
+  <style>
+    body {
+      background: #f5f2ea;
+      font-family: "Poppins", Arial, sans-serif;
+      color: #4d3b31;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    .topbar {
+      background: #fffdf8;
+      border-bottom: 2px solid #e6dfd3;
+      padding: 12px 20px;
+      text-align: left;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+    }
+    .topbar a {
+      color: #4d3b31;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .container {
+      max-width: 760px;
+      margin: 40px auto;
+      background: #fffdf8;
+      border: 2px solid #e6dfd3;
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.05);
+      position: relative;
+    }
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .badge {
+      background: #f9f6f1;
+      border: 2px solid #e6dfd3;
+      border-radius: 12px;
+      width: 150px;
+      height: 150px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .badge:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+    .badge span {
+      font-size: 40px;
+    }
+    .badge p {
+      margin: 6px 0 0 0;
+      font-size: 14px;
+      color: #7a6a5b;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .section-title {
+      margin-top: 40px;
+      font-size: 18px;
+      font-weight: 600;
+      color: #4d3b31;
+    }
+
+    .exercise-list {
+      margin-top: 14px;
+      text-align: left;
+      padding-left: 40px;
+      color: #4d3b31;
+    }
+
+    .exercise-list li {
+      background: #f9f6f1;
+      border: 1px solid #e6dfd3;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      padding: 8px 12px;
+      width: 80%;
+      transition: background 0.3s;
+    }
+
+    .exercise-list li:hover {
+      background: #f0eae0;
+    }
+
+    button {
+      background: #d6b59d;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 16px;
+      margin-top: 12px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .mascot {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .mascot img {
+      width: 120px;
+      border-radius: 12px;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
+    }
+    .msg {
+      background: #fffdf8;
+      border: 1.5px solid #e6dfd3;
+      padding: 8px 12px;
+      border-radius: 10px;
+      color: #4d3b31;
+      font-weight: 600;
+      max-width: 220px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topbar"><a href="dashboard.html">← Back to Dashboard</a></div>
+
+  <div class="container">
+    <h2>🏅 Achievements</h2>
+    <p style="color:#7a6a5b">Celebrate your healthy habits — earn a star for every good choice!</p>
+
+    <div class="badges">
+      <div class="badge"><span>💧</span><p>Drank 8 glasses of water</p></div>
+      <div class="badge"><span>🚶‍♀️</span><p>30 minutes of fun exercise</p></div>
+      <div class="badge"><span>🍎</span><p>Picked fruits over junk food</p></div>
+      <div class="badge"><span>🕗</span><p>Slept for 8 hours</p></div>
+      <div class="badge"><span>🌞</span><p>Morning stretch routine</p></div>
+      <div class="badge"><span>📅</span><p>Stayed active for 5 days</p></div>
+    </div>
+
+    <h3 class="section-title">💪 Exercise Ideas</h3>
+    <ul class="exercise-list" id="exerciseList">
+      <li>🚴 Ride your bicycle for 15 minutes</li>
+      <li>🪁 Fly a kite or play outdoors</li>
+      <li>🕺 Dance to your favorite song</li>
+      <li>🏃 Run small races with friends</li>
+      <li>🤸 Try 10 jumping jacks</li>
+    </ul>
+    <button onclick="showMore()">Show More</button>
+
+    <div class="mascot">
+      <img src="image.png" alt="Astronaut">
+      <div class="msg" id="mascotMsg">You’re collecting stars like a space hero! 🚀</div>
+    </div>
+  </div>
+
+  <script>
+    let expanded = false;
+    function showMore() {
+      const list = document.getElementById("exerciseList");
+      const msg = document.getElementById("mascotMsg");
+      if (!expanded) {
+        list.innerHTML += `
+          <li>🏸 Play badminton or throw a ball</li>
+          <li>🧘 Try simple yoga stretches</li>
+          <li>🏃‍♂️ Walk your pet or take a short walk</li>
+          <li>🧺 Help clean your room (bonus movement!)</li>`;
+        msg.innerText = "Every move makes you stronger 🌟";
+        expanded = true;
+      } else {
+        msg.innerText = "Keep exercising and shining! 💪";
+      }
+    }
+  </script>
+</body>
+</html>
+

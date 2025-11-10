@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>NutriTrack — Nutrition Guide</title>
+  <style>
+    body{background:#f5f2ea;font-family:"Poppins",Arial,sans-serif;color:#4d3b31;margin:0;padding:0;text-align:center;}
+    .topbar{background:#fffdf8;border-bottom:2px solid #e6dfd3;padding:12px 20px;text-align:left;box-shadow:0 2px 5px rgba(0,0,0,0.04);}
+    .topbar a{color:#4d3b31;text-decoration:none;font-weight:600}
+    .container{max-width:650px;margin:40px auto;background:#fffdf8;border:2px solid #e6dfd3;border-radius:14px;padding:24px;box-shadow:0 6px 14px rgba(0,0,0,0.05);position:relative}
+    select{width:90%;padding:10px;border-radius:10px;border:2px solid #d9d2c5;background:#fffefb;color:#4d3b31;font-size:14px;margin-top:10px}
+    button{background:#d6b59d;color:#fff;padding:10px 20px;border:none;border-radius:10px;margin-top:12px;cursor:pointer;font-weight:600}
+    .recommendation{margin-top:25px;background:#f9f6f1;padding:15px;border-radius:12px;border:1.5px solid #e6dfd3;text-align:left}
+    .mascot{position:absolute;right:-70px;top:20px;display:flex;flex-direction:column;align-items:center;gap:6px}
+    .msg{background:#fffdf8;border:1.5px solid #e6dfd3;padding:8px 12px;border-radius:10px;color:#4d3b31;font-weight:600;max-width:160px;box-shadow:0 4px 12px rgba(0,0,0,0.04)}
+    @media(max-width:700px){ .mascot{position:static;margin-top:14px;right:auto} }
+  </style>
+</head>
+<body>
+  <div class="topbar"><a href="dashboard.html">← Back to Dashboard</a></div>
+
+  <div class="container">
+    <h2>🍎 Nutrition Guide</h2>
+    <p style="color:#7a6a5b">Select a nutrient to see healthy food ideas.</p>
+
+    <select id="deficiency">
+      <option value="">Select deficiency...</option>
+      <option value="protein">Protein</option>
+      <option value="iron">Iron</option>
+      <option value="calcium">Calcium</option>
+      <option value="vitA">Vitamin A</option>
+      <option value="vitC">Vitamin C</option>
+    </select>
+    <button onclick="showFoods()">Show Foods</button>
+
+    <div id="foodList" class="recommendation" style="display:none"></div>
+
+    <div class="mascot">
+      <img src="image.png" alt="Astronaut" style="width:115px;border-radius:12px;box-shadow:0 6px 14px rgba(0,0,0,0.06)">
+      <div class="msg" id="nutriMsg">Let’s find your power foods! 🥕</div>
+    </div>
+  </div>
+
+  <script>
+    function showFoods(){
+      const t=document.getElementById('deficiency').value;
+      const foodList=document.getElementById('foodList');
+      const nutriMsg=document.getElementById('nutriMsg');
+
+      if(!t){ foodList.style.display='none'; nutriMsg.innerText='Pick a nutrient to begin!'; return; }
+
+      let out='';
+      if(t==='protein'){ out='<h3>Protein</h3><ul><li>Eggs</li><li>Lentils</li><li>Chicken</li><li>Milk</li></ul>'; nutriMsg.innerText='Protein builds muscles 💪'; }
+      if(t==='iron'){ out='<h3>Iron</h3><ul><li>Spinach</li><li>Beetroot</li><li>Dates</li><li>Legumes</li></ul>'; nutriMsg.innerText='Iron keeps you strong ⚙️'; }
+      if(t==='calcium'){ out='<h3>Calcium</h3><ul><li>Milk & Yogurt</li><li>Cheese</li><li>Almonds</li></ul>'; nutriMsg.innerText='Calcium strengthens bones 🦴'; }
+      if(t==='vitA'){ out='<h3>Vitamin A</h3><ul><li>Carrots</li><li>Sweet potato</li><li>Mango</li></ul>'; nutriMsg.innerText='Vitamin A supports good eyesight 👀'; }
+      if(t==='vitC'){ out='<h3>Vitamin C</h3><ul><li>Oranges</li><li>Guava</li><li>Tomatoes</li></ul>'; nutriMsg.innerText='Vitamin C fights sickness 💪'; }
+
+      foodList.style.display='block'; foodList.innerHTML=out;
+    }
+  </script>
+</body>
+</html>

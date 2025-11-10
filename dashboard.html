@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>NutriTrack Dashboard</title>
+<style>
+body { background:#f5f2ea; font-family:"Poppins",Arial,sans-serif; color:#4d3b31; margin:0; display:flex; min-height:100vh; }
+.sidebar { width:200px; background:#fffdf8; border-right:2px solid #e6dfd3; padding-top:30px; position:fixed; height:100vh; box-shadow:2px 0 6px rgba(0,0,0,0.05); }
+.sidebar img{width:70px;border-radius:50%;background:#f1ebe4;display:block;margin:0 auto 12px;padding:8px;}
+.sidebar h2{ text-align:center; font-size:18px; margin:0 0 18px 0;}
+.nav-link{display:block;padding:10px 18px;color:#4d3b31;text-decoration:none;font-weight:500;border-radius:8px;margin:4px 10px;}
+.nav-link:hover{background:#f5f2ea;border-left:4px solid #d6b59d;}
+.main-content{margin-left:200px; width:calc(100% - 200px);}
+header{background:#fffdf8;border-bottom:2px solid #e6dfd3; padding:10px 30px; display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:4;}
+header h1{margin:0;font-size:20px;}
+.icons img{width:26px;margin-left:12px;opacity:.8;cursor:pointer;}
+.grid-wrap{padding:30px;max-width:1100px;margin:0 auto 60px;}
+.grid-container{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
+.card{background:#fffdf8;border:2px solid #e6dfd3;border-radius:15px;padding:22px;box-shadow:0 4px 10px rgba(0,0,0,0.05);min-height:140px;display:flex;flex-direction:column;justify-content:space-between;}
+.card h2{margin:0 0 8px 0;}
+.card p{color:#7a6a5b;margin:0 0 12px 0;}
+.card .small{font-size:13px;color:#9b8f81;}
+.card button{background:#d6b59d;color:#fff;padding:8px 18px;border-radius:10px;border:none;font-weight:600;cursor:pointer;align-self:start;}
+.mascot { position:fixed; right:18px; bottom:18px; display:flex; align-items:center; gap:12px; z-index:6; }
+.mascot img { width:88px; height:88px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.08); }
+.mascot .bubble { background:#fffdf8; border:1.5px solid #e6dfd3; padding:10px 12px; border-radius:12px; color:#4d3b31; font-weight:600; max-width:230px; box-shadow:0 4px 12px rgba(0,0,0,0.04); }
+</style>
+</head>
+<body>
+<div class="sidebar">
+  <img src="image.png" alt="Logo">
+  <h2>NutriTrack</h2>
+  <a class="nav-link" href="dashboard.html">🏠 Dashboard</a>
+  <a class="nav-link" href="nutrition.html">🍎 Nutrition</a>
+  <a class="nav-link" href="activity.html">💪 Activity</a>
+  <a class="nav-link" href="bmi.html">📊 BMI</a>
+  <a class="nav-link" href="progress.html">📈 Progress</a>
+  <a class="nav-link" href="achievements.html">🏅 Achievements</a>
+</div>
+
+<div class="main-content">
+  <header>
+    <h1>Welcome, Space Hero 🌟</h1>
+    <div class="icons">
+      <img src="https://cdn-icons-png.flaticon.com/512/1828/1828817.png" alt="bell">
+      <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="profile">
+    </div>
+  </header>
+
+  <div class="grid-wrap">
+    <div class="grid-container">
+      <div class="card">
+        <div><h2>🍎 Nutrition Guide</h2><p>Discover food ideas based on nutrients.</p></div>
+        <button onclick="location.href='nutrition.html'">Open</button>
+      </div>
+      <div class="card">
+        <div><h2>💪 Activity Log</h2><p>Track your fun physical missions.</p></div>
+        <button onclick="location.href='activity.html'">Open</button>
+      </div>
+      <div class="card">
+        <div><h2>📊 BMI Calculator</h2><p>Check your growth in a friendly way.</p></div>
+        <button onclick="location.href='bmi.html'">Open</button>
+      </div>
+      <div class="card">
+        <div><h2>📈 Progress</h2><p>See how far you’ve come!</p></div>
+        <button onclick="location.href='progress.html'">Open</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mascot">
+  <div class="bubble">Hi! I'm Astro — ready to explore 🚀</div>
+  <img src="image.png" alt="Astronaut">
+</div>
+</body>
+</html>

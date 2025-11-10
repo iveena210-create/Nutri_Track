@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>NutriTrack — BMI Calculator</title>
+  <style>
+    body{background:#f5f2ea;font-family:"Poppins",Arial,sans-serif;color:#4d3b31;margin:0;padding:0;text-align:center;}
+    .topbar{background:#fffdf8;border-bottom:2px solid #e6dfd3;padding:12px 20px;text-align:left;box-shadow:0 2px 5px rgba(0,0,0,0.04);}
+    .topbar a{color:#4d3b31;text-decoration:none;font-weight:600}
+    .container{max-width:520px;margin:40px auto;background:#fffdf8;border:2px solid #e6dfd3;border-radius:14px;padding:24px;box-shadow:0 6px 14px rgba(0,0,0,0.05);position:relative;}
+    label{display:block;text-align:left;color:#4d3b31;font-weight:600;margin-top:12px}
+    input{width:94%;padding:10px;margin-top:6px;border-radius:8px;border:2px solid #d9d2c5;background:#fffefb;color:#4d3b31;font-size:14px}
+    button{background:#d6b59d;color:white;padding:10px 18px;margin-top:16px;border:none;border-radius:10px;cursor:pointer;font-weight:700}
+    .result{margin-top:18px;padding:12px;border-radius:10px;font-weight:700;color:white;display:none}
+    .result.green{background:#77c77b;color:#fffdf8}
+    .result.yellow{background:#f1c95f;color:#4d3b31}
+    .result.red{background:#f06a6a;color:#fffdf8}
+    .mascot{position:absolute;right:-60px;top:10px;width:120px;display:flex;flex-direction:column;align-items:center;gap:6px}
+    .msg{background:#fffdf8;border:1.5px solid #e6dfd3;padding:8px 12px;border-radius:10px;color:#4d3b31;font-weight:600;box-shadow:0 4px 12px rgba(0,0,0,0.04);max-width:160px}
+    @media(max-width:700px){ .mascot{position:static;margin-top:12px;right:auto} }
+  </style>
+</head>
+<body>
+  <div class="topbar"><a href="dashboard.html">← Back to Dashboard</a></div>
+
+  <div class="container">
+    <h2>📊 BMI Calculator</h2>
+    <p style="color:#7a6a5b">Enter your height and weight to see how you’re growing.</p>
+
+    <label for="weight">Weight (kg)</label>
+    <input id="weight" type="number" min="1" placeholder="e.g. 20">
+    <label for="height">Height (cm)</label>
+    <input id="height" type="number" min="30" placeholder="e.g. 120">
+
+    <button onclick="calculateBMI()">Calculate BMI</button>
+
+    <div id="output" class="result"></div>
+    <div id="note" style="color:#7a6a5b;margin-top:10px"></div>
+
+    <div class="mascot">
+      <img src="image.png" alt="Astronaut" style="width:100px;border-radius:10px;box-shadow:0 6px 14px rgba(0,0,0,0.06)">
+      <div class="msg" id="mascotMsg">I'm watching your growth — nice work! 🌿</div>
+    </div>
+  </div>
+
+  <script>
+    function calculateBMI(){
+      const w=parseFloat(document.getElementById('weight').value);
+      const hCm=parseFloat(document.getElementById('height').value);
+      const output=document.getElementById('output');
+      const note=document.getElementById('note');
+      const mascotMsg=document.getElementById('mascotMsg');
+
+      if(!w || !hCm || w<=0 || hCm<=0){
+        output.style.display='block'; output.className='result red';
+        output.innerText='Please enter valid height and weight.';
+        note.innerText=''; mascotMsg.innerText='Try again — enter numbers!';
+        return;
+      }
+      const h=hCm/100;
+      const bmi=+(w/(h*h)).toFixed(1);
+      let category='', cls='', advice='';
+
+      if(bmi<18.5){ category='Underweight'; cls='red'; advice='Try energy-rich foods like milk, eggs, lentils.'; mascotMsg.innerText='Let’s eat more nourishing meals! 💪'; }
+      else if(bmi<25){ category='Healthy'; cls='green'; advice='Great job! Keep eating balanced meals.'; mascotMsg.innerText='Perfect range — keep it up 🌟'; }
+      else { category='Overweight'; cls='yellow'; advice='Try more outdoor play and light meals.'; mascotMsg.innerText='We’ll find balance together 🚀'; }
+
+      output.style.display='block'; output.className='result '+cls;
+      output.innerText='BMI: '+bmi+' — '+category;
+      note.innerText=advice;
+    }
+  </script>
+</body>
+</html>
