@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>NutriTrack — Interactive</title>
+<style>
+  /* ===== Basic theme (paper-beige + pastel) ===== */
+  :root{
+    --bg:#f5f2ea;
+    --card:#fffdf8;
+    --border:#e6dfd3;
+    --accent:#d6b59d;
+    --text:#4d3b31;
+    --muted:#7a6a5b;
+    --soft:#f9f6f1;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: "Poppins", Arial, sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+  }
+  /* ===== App container ===== */
+  .app {
+    max-width:980px;
+    margin:18px auto;
+    padding:18px;
+  }
+
+  /* ===== header/nav (only visible after login) ===== */
+  .topbar {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    background:var(--card);
+    border:2px solid var(--border);
+    border-radius:12px;
+    padding:10px 16px;
+    box-shadow:0 6px 14px rgba(0,0,0,0.04);
+  }
+  .brand { display:flex; align-items:center; gap:10px; }
+  .brand img{ width:46px; height:46px; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.06) }
+  .brand h1{ font-size:18px; margin:0; }
+  .top-right { display:flex; gap:10px; align-items:center; }
+  .btn-ghost { background:transparent; border:none; color:var(--text); font-weight:600; cursor:pointer; }
+  .small-muted { color:var(--muted); font-size:13px; }
+
+  /* ===== sections (hidden/shown) ===== */
+  section { display:none; padding:18px 0; }
+  section.active { display:block; animation:fadeIn .35s ease; }
+
+  @keyframes fadeIn { from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none} }
+
+  /* ===== Login card ===== */
+  .login-card {
+    max-width:420px; margin:60px auto; text-align:center;
+    background:var(--card); border:2px solid var(--border); border-radius:14px; padding:28px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.06);
+  }
+  .login-card img{ width:120px; margin-bottom:14px; border-radius:12px }
+  .login-card h2{ margin:6px 0 4px 0 }
+  .input { width:100%; padding:10px 12px; margin:8px 0; border-radius:10px; border:2px solid #e8dfd2; background:#fffefb; color:var(--text) }
+  .primary { background:var(--accent); color:white; border:none; padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:700 }
+  .error { color:#b00020; font-weight:600; margin-top:6px; }
+
+  /* ===== Dashboard grid ===== */
+  .grid { display:grid; grid-template-columns:repeat(2,1fr); gap:18px; margin-top:20px }
+  .card {
+    background:var(--card); border:2px solid var(--border); border-radius:12px; padding:18px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.04); display:flex; flex-direction:column; justify-content:space-between;
+  }
+  .card h3{ margin:0 0 8px 0 }
+  .nav-btn { background:var(--accent); color:white; border:none; padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:700 }
+
+  /* ===== Forms/content layout ===== */
+  .two-col { display:flex; gap:14px; align-items:flex-start; }
+  .left { flex:1 }
+  .right { width:220px }
+
+  /* ===== Activity log ===== */
+  .activity-list { margin-top:12px; text-align:left }
+  .item { background:var(--soft); border:1px solid var(--border); padding:8px 10px; border-radius:10px; margin-bottom:8px; }
+
+  /* ===== Achievements grid and buttons ===== */
+  .ach-grid { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin-top:12px }
+  .ach-btn {
+    background:var(--soft);
+    border:2px solid var(--border);
+    padding:12px 14px;
+    border-radius:12px;
+    min-width:150px;
+    cursor:pointer;
+    display:flex; align-items:center; gap:10px;
+    justify-content:center;
+    transition:transform .18s, box-shadow .18s;
+    font-weight:700;
+  }
+  .ach-btn.achieved { background:#eaf7ee; border-color:#ccead2; color:#2b6b3b; box-shadow:0 6px 18px rgba(45,120,60,0.06) }
+  .ach-btn:active{ transform:scale(.98) }
+
+  /* ===== Progress stars ===== */
+  .stars { display:flex; gap:6px; font-size:26px; justify-content:center; margin-top:10px }
+  .star-empty { color:#e6dfd3 }
+  .star-filled { color: #d6b59d; filter: drop-shadow(0 4px 8px rgba(214,181,157,0.25)) }
+
+  /* ===== mascot box ===== */
+  .mascot {
+    position:sticky; top:18px;
+    display:flex; align-items:center; gap:12px;
+    background:var(--card); border:2px solid var(--border); border-radius:12px; padding:10px;
+  }
+  .mascot img { width:84px; border-radius:10px; }
+  .mascot .bubble { background:var(--card); padding:8px 10px; border-radius:10px; border:1px solid var(--border); font-weight:700 }
+
+  /* ===== small UI niceties ===== */
+  .hint { color:var(--muted); font-size:13px }
+  .linkish { background:transparent; border:none; color:var(--accent); font-weight:700; cursor:pointer }
+
+  /* responsive */
+  @media(max-width:820px){
+    .grid { grid-template-columns:1fr; }
+    .two-col{ flex-direction:column }
+    .right{ width:100% }
+  }
+
+  /* confetti (subtle) */
+  .confetti {
+    position:absolute; pointer-events:none; left:50%; transform:translateX(-50%); top:12%;
+    width:220px; height:160px; overflow:visible; display:none;
+  }
+  .confetti.show { display:block; animation:confettiOut .9s linear; }
+  @keyframes confettiOut { from{opacity:1} to{opacity:0} }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ===== TOPBAR (shows after login) ===== -->
+  <div id="topbar" class="topbar" style="display:none;">
+    <div class="brand">
+      <img src="image.png" alt="logo">
+      <div>
+        <h1>NutriTrack</h1>
+        <div class="small-muted" id="welcomeText">Welcome back!</div>
+      </div>
+    </div>
+    <div class="top-right">
+      <button class="btn-ghost" onclick="goSection('dashboard')">Dashboard</button>
+      <button class="btn-ghost" id="logoutBtn" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- ===== LOGIN SECTION ===== -->
+  <section id="loginSection" class="active">
+    <div class="login-card" role="main" aria-labelledby="loginTitle">
+      <img src="image.png" alt="astronaut">
+      <h2 id="loginTitle">Welcome to NutriTrack</h2>
+      <p class="small-muted">A calm space to track healthy habits</p>
+
+      <input id="username" class="input" placeholder="Username" value="">
+      <input id="password" type="password" class="input" placeholder="Password" value="">
+
+      <button class="primary" onclick="handleLogin()">Login</button>
+      <div id="loginError" class="error" role="alert" style="display:none"></div>
+
+      <p style="margin-top:12px; color:var(--muted); font-size:13px">Use <strong>user</strong> / <strong>nutri123</strong> to sign in</p>
+    </div>
+  </section>
+
+  <!-- ===== APP CONTENT (hidden until login) ===== -->
+  <div id="appContent" style="display:none">
+
+    <!-- Dashboard -->
+    <section id="dashboard" class="">
+      <div style="display:flex; gap:18px; align-items:flex-start; margin-bottom:12px;">
+        <div style="flex:1">
+          <div style="font-size:20px; font-weight:700">Hello, <span id="displayName">Cadet</span> 👋</div>
+          <div class="hint">Choose a tool to continue — your astronaut will guide you.</div>
+
+          <div class="grid">
+            <div class="card">
+              <div>
+                <h3>📊 BMI Calculator</h3>
+                <p class="hint">Check growth and save your BMI result.</p>
+              </div>
+              <button class="nav-btn" onclick="goSection('bmi')">Open BMI</button>
+            </div>
+
+            <div class="card">
+              <div>
+                <h3>🥗 Nutrition Guide</h3>
+                <p class="hint">Select a nutrient and see recommended foods.</p>
+              </div>
+              <button class="nav-btn" onclick="goSection('nutrition')">Open Nutrition</button>
+            </div>
+
+            <div class="card">
+              <div>
+                <h3>🏃 Activity Log</h3>
+                <p class="hint">Log activities — your progress will update automatically.</p>
+              </div>
+              <button class="nav-btn" onclick="goSection('activity')">Open Activity</button>
+            </div>
+
+            <div class="card">
+              <div>
+                <h3>🏅 Achievements</h3>
+                <p class="hint">Earn stars for simple healthy choices.</p>
+              </div>
+              <button class="nav-btn" onclick="goSection('achievements')">Open Achievements</button>
+            </div>
+
+            <div class="card" style="grid-column:1 / -1">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <h3>📈 Progress</h3>
+                  <p class="hint">View combined progress (BMI, activities & achievements).</p>
+                </div>
+                <div>
+                  <button class="nav-btn" onclick="goSection('progress')">Open Progress</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- mascot box -->
+        <div class="right" style="width:240px">
+          <div class="mascot">
+            <img src="image.png" alt="mascot">
+            <div>
+              <div class="bubble" id="mascotBubble">Welcome, space hero!</div>
+              <div class="hint" style="margin-top:6px">Tip: Log activities to keep your star count growing ✨</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BMI -->
+    <section id="bmi">
+      <div class="two-col">
+        <div class="left card">
+          <div>
+            <h3>📊 BMI Calculator</h3>
+            <p class="hint">Enter height (cm) and weight (kg) and save the result for future progress checks.</p>
+
+            <label class="hint">Weight (kg)</label>
+            <input id="bWeight" class="input" type="number" min="1" placeholder="e.g. 20">
+
+            <label class="hint">Height (cm)</label>
+            <input id="bHeight" class="input" type="number" min="30" placeholder="e.g. 120">
+
+            <button class="primary" onclick="calculateAndSaveBMI()">Calculate & Save</button>
+
+            <div id="bmiResult" style="margin-top:12px"></div>
+          </div>
+        </div>
+
+        <div class="right">
+          <div class="mascot">
+            <img src="image.png" alt="mascot">
+            <div class="bubble" id="bmiMascot">I watch your growth 💫</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Nutrition -->
+    <section id="nutrition">
+      <div class="two-col">
+        <div class="left card">
+          <h3>🥗 Nutrition Guide</h3>
+          <p class="hint">Select a nutrient deficiency to see simple, local food suggestions.</p>
+
+          <select id="nutriSelect" class="input" onchange="showNutrition()">
+            <option value="">Select deficiency...</option>
+            <option value="protein">Protein</option>
+            <option value="iron">Iron</option>
+            <option value="calcium">Calcium</option>
+            <option value="vitA">Vitamin A</option>
+            <option value="vitC">Vitamin C</option>
+          </select>
+
+          <div id="nutriList" style="margin-top:12px"></div>
+        </div>
+
+        <div class="right">
+          <div class="mascot">
+            <img src="image.png" alt="mascot">
+            <div class="bubble" id="nutriMascot">Let me point to helpful foods 🥕</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Activity -->
+    <section id="activity">
+      <div class="two-col">
+        <div class="left card">
+          <h3>🏃 Activity Log</h3>
+          <p class="hint">Write what you did today — or choose a suggestion. This is saved to your profile.</p>
+
+          <label class="hint">Activity (e.g. Played football for 20 minutes)</label>
+          <input id="activityInput" class="input" placeholder="Type your activity">
+
+          <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="ach-btn" onclick="addActivity('Walked for 15 minutes')">🚶 Walk</button>
+            <button class="ach-btn" onclick="addActivity('Danced for 10 minutes')">🕺 Dance</button>
+            <button class="ach-btn" onclick="addActivity('Did 10 jumping jacks')">🤸 Jumping Jacks</button>
+            <button class="ach-btn" onclick="addActivity('Rode a bicycle')">🚴 Cycle</button>
+          </div>
+
+          <button class="primary" style="margin-top:12px" onclick="manualAdd()">Add Activity</button>
+
+          <div id="activityList" class="activity-list"></div>
+        </div>
+
+        <div class="right">
+          <div class="mascot">
+            <img src="image.png" alt="mascot">
+            <div class="bubble" id="actMascot">Every move helps! 🌿</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Achievements -->
+    <section id="achievements">
+      <div class="card">
+        <h3>🏅 Achievements</h3>
+        <p class="hint">Tap an achievement to mark it as done for today. Stars are saved to your profile.</p>
+
+        <div class="ach-grid" id="achGrid">
+          <div id="ach_veggies" class="ach-btn" onclick="toggleAchievement('veggies')">🥦 Ate Veggies</div>
+          <div id="ach_water" class="ach-btn" onclick="toggleAchievement('water')">💧 Drank 8 Glasses</div>
+          <div id="ach_exercise" class="ach-btn" onclick="toggleAchievement('exercise')">🏃 Exercised 30 min</div>
+          <div id="ach_sleep" class="ach-btn" onclick="toggleAchievement('sleep')">🌙 Slept Well</div>
+        </div>
+
+        <div style="margin-top:16px; text-align:center">
+          <div class="hint">Stars earned:</div>
+          <div id="starsBox" class="stars"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Progress -->
+    <section id="progress">
+      <div class="card">
+        <h3>📈 Progress</h3>
+        <p class="hint">This page summarises your saved BMI, activity count and achievements.</p>
+
+        <div style="display:flex; gap:18px; align-items:center; margin-top:14px; flex-wrap:wrap;">
+          <div style="flex:1; min-width:220px;">
+            <strong>BMI:</strong>
+            <div id="progressBMI" class="item" style="margin-top:8px">Not recorded yet</div>
+          </div>
+          <div style="flex:1; min-width:220px;">
+            <strong>Activities logged:</strong>
+            <div id="progressActivities" class="item" style="margin-top:8px">0</div>
+          </div>
+          <div style="flex:1; min-width:220px;">
+            <strong>Achievements unlocked:</strong>
+            <div id="progressAchievements" class="item" style="margin-top:8px">0 / 4</div>
+          </div>
+        </div>
+
+        <div style="margin-top:18px; text-align:center">
+          <div class="hint">Overall stars</div>
+          <div id="progressStars" class="stars"></div>
+          <div id="progressMsg" style="margin-top:12px; font-weight:700"></div>
+        </div>
+      </div>
+    </section>
+
+  </div> <!-- end appContent -->
+
+  <!-- subtle confetti SVG area (used briefly) -->
+  <div id="confetti" class="confetti" aria-hidden="true"></div>
+
+</div>
+
+<script>
+/* =========================
+   NutriTrack — Single Page App JS
+   - LocalStorage per-user
+   - Sections navigation with animation
+   - Login + persistence
+   - BMI, Nutrition, Activity, Achievements, Progress features
+   ========================= */
+
+const DEFAULT_USER = 'user';
+const DEFAULT_PASS = 'nutri123';
+
+let currentUser = null;
+let userData = null;
+
+/* -------- Storage helpers --------
+store per-user object at key: nutri_user_<username>
+structure:
+{
+  username: "...",
+  bmi: { value: 18.2, category: "Underweight" } or null,
+  activities: [ "Walked 15 min", ... ],
+  achievements: { veggies: false, water:false, exercise:false, sleep:false },
+  favorites: [] // optional nutrition favorites
+}
+---------------------------------- */
+
+function storageKey(username){ return 'nutri_user_' + username; }
+
+function loadUserFromStorage(username){
+  const raw = localStorage.getItem(storageKey(username));
+  if(!raw) return null;
+  try { return JSON.parse(raw); } catch(e){ return null; }
+}
+function saveUserToStorage(username, data){
+  localStorage.setItem(storageKey(username), JSON.stringify(data));
+}
+
+/* --- initialize default user if none exists --- */
+function ensureUserExists(username){
+  let ud = loadUserFromStorage(username);
+  if(!ud){
+    ud = {
+      username,
+      bmi: null,
+      activities: [],
+      achievements: { veggies:false, water:false, exercise:false, sleep:false },
+      favorites: []
+    };
+    saveUserToStorage(username, ud);
+  }
+  return ud;
+}
+
+/* ------- Login / session -------- */
+function handleLogin(){
+  const name = document.getElementById('username').value.trim();
+  const pass = document.getElementById('password').value;
+  const err = document.getElementById('loginError');
+
+  if(!name || !pass){ err.style.display='block'; err.textContent='Please enter username & password'; return; }
+
+  // For the prototype: accept the default credentials; if user exists in storage, check password saved (we'll store password in session only)
+  // We'll keep a simple "credentials store" in localStorage named nutri_credentials for demo purposes:
+  const credKey = 'nutri_credentials';
+  let creds = JSON.parse(localStorage.getItem(credKey) || '{}');
+
+  // If credentials store empty, populate with default account
+  if(Object.keys(creds).length === 0){
+    creds[DEFAULT_USER] = DEFAULT_PASS;
+    localStorage.setItem(credKey, JSON.stringify(creds));
+  }
+
+  // If user not in creds, create account automatically with provided password (makes first-time registration smooth)
+  if(!creds[name]){
+    // registration behavior: create account with provided password
+    creds[name] = pass;
+    localStorage.setItem(credKey, JSON.stringify(creds));
+    // create user data skeleton
+    userData = ensureUserExists(name);
+    // store a friendly welcome message
+    currentUser = name;
+    saveUserToStorage(currentUser, userData);
+    err.style.display='none';
+    startSession(name);
+    return;
+  }
+
+  // validate password
+  if(creds[name] !== pass){
+    err.style.display='block';
+    err.textContent='Incorrect username or password. Please try again.';
+    return;
+  }
+
+  // successful login
+  currentUser = name;
+  userData = ensureUserExists(name);
+  err.style.display='none';
+  startSession(name);
+}
+
+function startSession(username){
+  // set welcome text etc
+  document.getElementById('displayName').textContent = capitalize(username);
+  document.getElementById('welcomeText').textContent = `Welcome back, ${capitalize(username)}!`;
+  // show topbar & app content
+  document.getElementById('topbar').style.display = 'flex';
+  document.getElementById('appContent').style.display = 'block';
+  document.getElementById('loginSection').style.display = 'none';
+
+  // save a "logged in" flag for session persistence
+  sessionStorage.setItem('nutri_session', username);
+
+  // load user data and render sections
+  userData = ensureUserExists(username);
+  renderAllForUser();
+  goSection('dashboard', true);
+}
+
+/* resume session if any */
+(function(){
+  const sessionUser = sessionStorage.getItem('nutri_session');
+  if(sessionUser){
+    currentUser = sessionUser;
+    userData = ensureUserExists(currentUser);
+    document.getElementById('username').value = currentUser;
+    startSession(currentUser);
+  } else {
+    // prefill username field for convenience
+    document.getElementById('username').value = DEFAULT_USER;
+  }
+})();
+
+function logout(){
+  sessionStorage.removeItem('nutri_session');
+  currentUser = null;
+  userData = null;
+  // hide app, show login
+  document.getElementById('topbar').style.display = 'none';
+  document.getElementById('appContent').style.display = 'none';
+  document.getElementById('loginSection').style.display = 'block';
+  document.getElementById('password').value = '';
+  // set focus
+  document.getElementById('username').focus();
+}
+
+/* ------- Navigation / sections ------- */
+function goSection(id, instant = false){
+  // hide all sections inside appContent, then show id
+  const sections = ['dashboard','bmi','nutrition','activity','achievements','progress'];
+  sections.forEach(s => {
+    const el = document.getElementById(s);
+    if(!el) return;
+    el.classList.remove('active');
+  });
+  const target = document.getElementById(id);
+  if(!target) return;
+  // small delay for nicer transition
+  if(instant){
+    target.classList.add('active');
+  } else {
+    target.classList.add('active');
+  }
+  // update mascot message based on section
+  updateMascotForSection(id);
+  // refresh dynamic content for that section
+  if(id==='bmi') loadBMIInputs();
+  if(id==='activity') renderActivities();
+  if(id==='achievements') renderAchievements();
+  if(id==='progress') renderProgress();
+  if(id==='nutrition') { document.getElementById('nutriSelect').value = ''; document.getElementById('nutriList').innerHTML=''; }
+}
+
+/* ------- UI helpers ------- */
+function capitalize(s){ if(!s) return s; return s.charAt(0).toUpperCase() + s.slice(1); }
+
+function updateMascotForSection(section){
+  const bubble = document.getElementById('mascotBubble');
+  if(!bubble) return;
+  const map = {
+    'dashboard': 'Welcome back, space hero! 🚀',
+    'bmi': 'Let’s check your growth — gentle & kind 🩵',
+    'nutrition': 'I can point you to power foods 🥕',
+    'activity': 'Small moves are big wins 🌱',
+    'achievements': 'Earn stars for healthy habits ✨',
+    'progress': 'See how your mission is going 📈'
+  };
+  bubble.textContent = map[section] || 'Keep exploring!';
+}
+
+/* ===== BMI logic ===== */
+function calculateAndSaveBMI(){
+  const w = parseFloat(document.getElementById('bWeight').value);
+  const hCm = parseFloat(document.getElementById('bHeight').value);
+  const out = document.getElementById('bmiResult');
+  if(!w || !hCm || w<=0 || hCm<=0){ out.textContent = 'Enter valid height and weight.'; out.style.color='red'; return; }
+  const h = hCm/100;
+  const bmiVal = +(w/(h*h)).toFixed(1);
+  let category = '';
+  if(bmiVal < 18.5) category = 'Underweight';
+  else if(bmiVal < 25) category = 'Healthy';
+  else category = 'Overweight';
+
+  // save to userData and storage
+  userData.bmi = { value: bmiVal, category };
+  saveUserToStorage(currentUser, userData);
+  out.style.color = '#333';
+  out.innerHTML = `BMI: <strong>${bmiVal}</strong> — ${category}`;
+  // update progress view
+  renderProgress();
+  // mascot feedback
+  document.getElementById('bmiMascot').textContent = (category==='Healthy') ? 'Great range — keep it up 🌟' : (category==='Underweight' ? 'Let’s add nourishing foods 💪' : 'We can find balanced steps 🚶');
+}
+
+/* load BMI input fields with saved values if present */
+function loadBMIInputs(){
+  const weight = document.getElementById('bWeight');
+  const height = document.getElementById('bHeight');
+  const out = document.getElementById('bmiResult');
+  if(userData && userData.bmi){
+    out.innerHTML = `BMI: <strong>${userData.bmi.value}</strong> — ${userData.bmi.category}`;
+    out.style.color = '#333';
+  } else {
+    out.innerHTML = 'No BMI recorded yet.';
+    out.style.color = 'var(--muted)';
+  }
+  weight.value = '';
+  height.value = '';
+}
+
+/* ===== Nutrition logic ===== */
+function showNutrition(){
+  const t = document.getElementById('nutriSelect').value;
+  const container = document.getElementById('nutriList');
+  const masc = document.getElementById('nutriMascot');
+  if(!t){ container.innerHTML=''; masc.textContent = 'Let me point to helpful foods 🥕'; return; }
+  let html='';
+  if(t==='protein'){
+    html = `<h4>Protein-rich foods</h4><ul><li>Eggs</li><li>Lentils (dal)</li><li>Milk & yogurt</li><li>Peanuts</li></ul>`;
+    masc.textContent = 'Protein helps build muscles 💪';
+  } else if(t==='iron'){
+    html = `<h4>Iron-rich foods</h4><ul><li>Spinach</li><li>Beetroot</li><li>Dates & raisins</li><li>Legumes</li></ul>`;
+    masc.textContent = 'Iron keeps your energy steady ⚙️';
+  } else if(t==='calcium'){
+    html = `<h4>Calcium sources</h4><ul><li>Milk & curd</li><li>Cheese</li><li>Almonds</li><li>Leafy greens</li></ul>`;
+    masc.textContent = 'Calcium helps bones grow strong 🦴';
+  } else if(t==='vitA'){
+    html = `<h4>Vitamin A</h4><ul><li>Carrots</li><li>Sweet potato</li><li>Mango</li></ul>`;
+    masc.textContent = 'Vitamin A supports eyesight 👀';
+  } else if(t==='vitC'){
+    html = `<h4>Vitamin C</h4><ul><li>Oranges</li><li>Guava</li><li>Tomatoes</li></ul>`;
+    masc.textContent = 'Vitamin C helps fight sickness 💪';
+  }
+  container.innerHTML = `<div style="background:var(--soft);border:1px solid var(--border);padding:10px;border-radius:10px">${html}</div>`;
+}
+
+/* ===== Activity logic ===== */
+function renderActivities(){
+  const list = document.getElementById('activityList');
+  list.innerHTML = '';
+  if(!userData || !userData.activities || userData.activities.length===0){
+    list.innerHTML = `<div class="hint" style="padding:8px">No activities logged yet. Try adding one!</div>`;
+    return;
+  }
+  userData.activities.slice().reverse().forEach(a => {
+    const d = document.createElement('div');
+    d.className = 'item';
+    d.textContent = a;
+    list.appendChild(d);
+  });
+}
+
+function addActivity(text){
+  if(!text) return;
+  if(!userData.activities) userData.activities = [];
+  userData.activities.push(text + ''); // store string
+  saveUserToStorage(currentUser, userData);
+  renderActivities();
+  // dynamic updates
+  document.getElementById('actMascot').textContent = 'Nice move! Keep it up!';
+  renderProgress();
+}
+
+function manualAdd(){
+  const val = document.getElementById('activityInput').value.trim();
+  if(!val) return;
+  addActivity(val);
+  document.getElementById('activityInput').value = '';
+}
+
+/* ===== Achievements logic ===== */
+function renderAchievements(){
+  // set buttons state
+  const keys = ['veggies','water','exercise','sleep'];
+  keys.forEach(k => {
+    const el = document.getElementById('ach_' + k);
+    if(userData.achievements && userData.achievements[k]){
+      el.classList.add('achieved');
+      el.textContent = emojiForKey(k) + ' ' + labelForKey(k) + ' ✓';
+    } else {
+      el.classList.remove('achieved');
+      el.textContent = emojiForKey(k) + ' ' + labelForKey(k);
+    }
+  });
+  renderStarsBox();
+}
+
+function emojiForKey(k){
+  const map = { veggies:'🥦', water:'💧', exercise:'🏃', sleep:'🌙' };
+  return map[k] || '⭐';
+}
+function labelForKey(k){
+  const map = { veggies:'Ate Veggies', water:'Drank Water', exercise:'Exercised', sleep:'Slept Well' };
+  return map[k] || k;
+}
+
+function toggleAchievement(key){
+  if(!userData.achievements) userData.achievements = { veggies:false, water:false, exercise:false, sleep:false };
+  const prev = !!userData.achievements[key];
+  userData.achievements[key] = !prev;
+  saveUserToStorage(currentUser, userData);
+  renderAchievements();
+  // small confetti effect
+  if(!prev){ showConfetti(); }
+  renderProgress();
+}
+
+function countAchievements(){
+  return Object.values(userData.achievements || {}).filter(Boolean).length;
+}
+
+function renderStarsBox(){
+  const stars = document.getElementById('starsBox');
+  stars.innerHTML = '';
+  const count = countAchievements();
+  for(let i=0;i<4;i++){
+    const span = document.createElement('span');
+    span.innerHTML = (i < count) ? '<span class="star-filled">★</span>' : '<span class="star-empty">★</span>';
+    stars.appendChild(span);
+  }
+}
+
+/* ===== Progress logic ===== */
+function renderProgress(){
+  // BMI display
+  const bmiBox = document.getElementById('progressBMI');
+  if(userData.bmi){
+    bmiBox.innerHTML = `BMI: <strong>${userData.bmi.value}</strong> — ${userData.bmi.category}`;
+  } else {
+    bmiBox.innerHTML = 'Not recorded yet';
+  }
+  // activities count
+  const actBox = document.getElementById('progressActivities');
+  const countAct = (userData.activities || []).length;
+  actBox.textContent = String(countAct);
+
+  // achievements
+  const achBox = document.getElementById('progressAchievements');
+  const achCount = countAchievements();
+  achBox.innerHTML = `${achCount} / 4`;
+
+  // overall stars
+  const starEl = document.getElementById('progressStars');
+  starEl.innerHTML = '';
+  for(let i=0;i<4;i++){
+    const s = document.createElement('span');
+    s.innerHTML = (i < achCount) ? '<span class="star-filled">★</span>' : '<span class="star-empty">★</span>';
+    starEl.appendChild(s);
+  }
+
+  // message based on achievements + activity + BMI
+  const msg = document.getElementById('progressMsg');
+  if(achCount >= 4) msg.textContent = 'Super Star! You are doing brilliantly ✨';
+  else if(achCount >= 3) msg.textContent = 'Doing Great — nearly all stars ⭐';
+  else if(achCount >= 1) msg.textContent = 'Good start — keep going!';
+  else msg.textContent = 'Let’s try to earn the first star — small steps!';
+
+  // update mascot message
+  const bubble = document.getElementById('mascotBubble');
+  bubble.textContent = (achCount >= 3) ? 'You’re shining — keep going!' : 'Small steps make big change 🌿';
+}
+
+/* ===== confetti (very simple) ===== */
+function showConfetti(){
+  const c = document.getElementById('confetti');
+  c.innerHTML = ''; // create some small colored dots
+  const colors = ['#d6b59d','#f0d5c1','#cde7d6','#f7f3ea'];
+  for(let i=0;i<18;i++){
+    const span = document.createElement('div');
+    span.style.position='absolute';
+    span.style.left = (Math.random()*220 - 110) + 'px';
+    span.style.top = (Math.random()*80) + 'px';
+    span.style.width = (6 + Math.random()*6)+'px';
+    span.style.height = span.style.width;
+    span.style.borderRadius='50%';
+    span.style.background = colors[Math.floor(Math.random()*colors.length)];
+    span.style.opacity = '0.95';
+    span.style.transform = `translateY(0) rotate(${Math.random()*360}deg)`;
+    span.style.transition = 'transform .9s ease, opacity 1s linear';
+    c.appendChild(span);
+    setTimeout(()=>{ span.style.transform = `translateY(80px) rotate(${Math.random()*720}deg)`; span.style.opacity='0'; }, 20 + i*10);
+  }
+  c.classList.add('show');
+  setTimeout(()=>{ c.classList.remove('show'); c.innerHTML=''; }, 900);
+}
+
+/* ===== utilities & initial render ===== */
+function renderAllForUser(){
+  if(!userData) userData = ensureUserExists(currentUser);
+  // fill display name
+  document.getElementById('displayName').textContent = capitalize(currentUser);
+  // render dependent parts
+  renderActivities();
+  renderAchievements();
+  renderProgress();
+}
+
+// expose goSection to buttons
+window.goSection = goSection;
+
+/* keyboard convenience: press Enter on login to submit */
+document.getElementById('password').addEventListener('keydown', function(e){
+  if(e.key==='Enter') handleLogin();
+});
+document.getElementById('username').addEventListener('keydown', function(e){
+  if(e.key==='Enter') document.getElementById('password').focus();
+});
+</script>
+</body>
+</html>
